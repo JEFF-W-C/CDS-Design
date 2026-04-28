@@ -150,6 +150,16 @@
                 };
             }, [activeChem]);
 
+            // --- 預先計算好的顯示用數值 (解決小於符號破圖問題) ---
+            const cdaDisplay = useMemo(() => {
+                const val = nFlow * (totalHead / 1.5) * 1.5;
+                return val < 1 ? 0 : Math.round(val);
+            }, [nFlow, totalHead]);
+            
+            const hpDisplay = useMemo(() => {
+                return (nFlow * totalHead * 10 / 2250).toFixed(2);
+            }, [nFlow, totalHead]);
+
             // --- 警告狀態 ---
             const isSolventHighSpeed = activeChem.category === 'Solvent' && nVel > 1.0;
             const isLowSpeed = nVel < 0.3 && nVel > 0;
@@ -346,9 +356,9 @@
                                 </div>
                                 <div className="pt-4 border-t border-emerald-200">
                                     {isPneumatic ? (
-                                        <p className="text-sm font-bold text-blue-700 flex justify-between">預估耗氣量: <span>{nFlow * (totalHead / 1.5) * 1.5 < 1 ? 0 : Math.round(nFlow * (totalHead / 1.5) * 1.5)} LPM (CDA)</span></p>
+                                        <p className="text-sm font-bold text-blue-700 flex justify-between">預估耗氣量: <span>{cdaDisplay} LPM (CDA)</span></p>
                                     ) : (
-                                        <p className="text-sm font-bold text-emerald-700 flex justify-between">預估馬力需求: <span>{(nFlow * totalHead * 10 / 2250).toFixed(2)} HP</span></p>
+                                        <p className="text-sm font-bold text-emerald-700 flex justify-between">預估馬力需求: <span>{hpDisplay} HP</span></p>
                                     )}
                                 </div>
                             </div>
@@ -432,7 +442,7 @@
                             )}
                             {isLowSpeed && (
                                 <li className="flex gap-2 text-orange-700 underline">
-                                    <span>⚠️</span> <span>警告：流速低於 0.3 m/s。依據 Global Standard，系統連續迴路(Loop)最低流速須 {'>'} 1 ft/s 以防止微粒沉澱與生物膜生成。</span>
+                                    <span>⚠️</span> <span>警告：流速低於 0.3 m/s。依據 Global Standard，系統連續迴路(Loop)最低流速須 &gt; 1 ft/s 以防止微粒沉澱與生物膜生成。</span>
                                 </li>
                             )}
                             {isLowDOS && (
