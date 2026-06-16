@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>美光 CDS/WCCS 專家設計工具</title>
-    <!-- 引入 React, ReactDOM 與 Babel -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @keyframes flowAnimation { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
@@ -150,7 +148,7 @@
                 };
             }, [activeChem]);
 
-            // --- 預先計算好的顯示用數值 (解決小於符號破圖問題) ---
+            // --- 預先計算好的顯示用數值 ---
             const cdaDisplay = useMemo(() => {
                 const val = nFlow * (totalHead / 1.5) * 1.5;
                 return val < 1 ? 0 : Math.round(val);
@@ -337,7 +335,7 @@
                         </div>
                     </div>
 
-                    {/* STEP 5: 選型建議 (整合美光規範) */}
+                    {/* STEP 5: 選型建議 */}
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
                         <h2 className="text-xl font-bold text-slate-800 mb-4 border-b pb-2 flex items-center">
                             <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center mr-3 text-sm shadow-sm font-black">5</span>
@@ -423,7 +421,7 @@
                         </div>
                     </div>
 
-                    {/* 專家設計提示 (警告與通知) */}
+                    {/* 專家設計提示 */}
                     <div className="bg-amber-50 p-6 rounded-xl border border-amber-200">
                         <h2 className="text-sm font-bold text-amber-800 mb-4 flex items-center">
                             <span className="mr-2">⚠️</span> 專家設計提示 (System Alerts)
