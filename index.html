@@ -25,17 +25,415 @@
         
         const { useState, useEffect, useMemo } = React;
 
-        // --- 完整化學品資料庫 ---
+        // --- 完整化學品資料庫 (使用反單引號防止斷行錯誤) ---
         const chemicalsData = [
-            { name: 'TMAH 0.063%', viscosity: 1.0, sg: 1.0, flash: 'N/A', category: 'Caustic', material: 'PFA 451HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: '一般鹼液，低濃度。' },
-            { name: 'TMAH 2.38%', viscosity: 1.0, sg: 1.0, flash: 'N/A', category: 'Caustic', material: 'PFA 451HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: '高毒性，精度要求高，需配置線上滴定儀。' },
-            { name: 'NH4OH 2%', viscosity: 1.0, sg: 0.99, flash: 'N/A', category: 'Caustic', material: 'PFA 451HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: '一般鹼液。' },
-            { name: 'NH4OH 29%', viscosity: 1.2, sg: 0.9, flash: 'N/A', category: 'Caustic', material: 'PFA 951HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: '高濃度氨水，排氣系統需特別處理避免結晶。' },
-            { name: 'NTD-DP001', viscosity: 1.2, sg: 0.95, flash: '44.0°C', category: 'Solvent', material: 'SUS316L EP (自動銲接)', pumpType: 'Pneumatic Diaphragm (防爆氣動泵)', avl: 'Almatec / Yamada', notes: '光阻溶劑，易燃。流速嚴格限制 < 1.0 m/s，需全面防爆接地。' },
-            { name: 'RP002', viscosity: 1.004, sg: 0.81, flash: '45.5°C', category: 'Solvent', material: 'SUS316L EP (自動銲接)', pumpType: 'Pneumatic Diaphragm (防爆氣動泵)', avl: 'Almatec / Yamada', notes: '光阻溶劑，易燃。流速限制 < 1.0 m/s。' },
-            { name: 'H2O2 31%', viscosity: 1.11, sg: 1.12, flash: 'N/A', category: 'Oxidizer', material: 'PFA 451HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: '強氧化劑。儲槽嚴禁 N2 Blanket (氮氣封存)，需配備 PTFE 呼吸閥。' },
-            { name: 'H2SO4 98%', viscosity: 19.0, sg: 1.84, flash: 'N/A', category: 'Acid', material: 'PFA 951HP + CPVC', pumpType: 'Pneumatic Bellows / Diaphragm (高壓氣動泵)', avl: 'White Knight / Almatec', notes: '高黏度強酸。高耗能，需雙主管設計；混合遇水有高溫放熱危險。' },
-            { name: 'HF 49%', viscosity: 1.1, sg: 1.15, flash: 'N/A', category: 'Acid', material: 'PFA 951HP + CPVC', pumpType: 'Pneumatic / Mag-drive', avl: 'White Knight / Iwaki', notes: '極強腐蝕性。桶槽底部排液閥需選用 PVDF 材質。' },
-            { name: 'HNO3 70%', viscosity: 2.3, sg: 1.42, flash: 'N/A', category: 'Acid', material: 'PFA 951HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: '強酸，需注意管材抗氧化性。' },
-            { name: 'HCl 37%', viscosity: 1.9, sg: 1.19, flash: 'N/A', category: 'Acid', material: 'PFA 951HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: '發煙性強酸，儲槽需配置 Exhausted enclosure。' },
-            { name: 'NaOH (Salix)', viscosity: 2.0, sg: 1.2, flash: 'N/A', category: 'Caustic', material: 'Transfer: SUS304 / Supply: PFA', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: 'Transfer 管線可用 SUS304
+            { name: 'TMAH 0.063%', viscosity: 1.0, sg: 1.0, flash: 'N/A', category: 'Caustic', material: 'PFA 451HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: `一般鹼液，低濃度。` },
+            { name: 'TMAH 2.38%', viscosity: 1.0, sg: 1.0, flash: 'N/A', category: 'Caustic', material: 'PFA 451HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: `高毒性，精度要求高，需配置線上滴定儀。` },
+            { name: 'NH4OH 2%', viscosity: 1.0, sg: 0.99, flash: 'N/A', category: 'Caustic', material: 'PFA 451HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: `一般鹼液。` },
+            { name: 'NH4OH 29%', viscosity: 1.2, sg: 0.9, flash: 'N/A', category: 'Caustic', material: 'PFA 951HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: `高濃度氨水，排氣系統需特別處理避免結晶。` },
+            { name: 'NTD-DP001', viscosity: 1.2, sg: 0.95, flash: '44.0°C', category: 'Solvent', material: 'SUS316L EP (自動銲接)', pumpType: 'Pneumatic Diaphragm (防爆氣動泵)', avl: 'Almatec / Yamada', notes: `光阻溶劑，易燃。流速嚴格限制 < 1.0 m/s，需全面防爆接地。` },
+            { name: 'RP002', viscosity: 1.004, sg: 0.81, flash: '45.5°C', category: 'Solvent', material: 'SUS316L EP (自動銲接)', pumpType: 'Pneumatic Diaphragm (防爆氣動泵)', avl: 'Almatec / Yamada', notes: `光阻溶劑，易燃。流速限制 < 1.0 m/s。` },
+            { name: 'H2O2 31%', viscosity: 1.11, sg: 1.12, flash: 'N/A', category: 'Oxidizer', material: 'PFA 451HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: `強氧化劑。儲槽嚴禁 N2 Blanket (氮氣封存)，需配備 PTFE 呼吸閥。` },
+            { name: 'H2SO4 98%', viscosity: 19.0, sg: 1.84, flash: 'N/A', category: 'Acid', material: 'PFA 951HP + CPVC', pumpType: 'Pneumatic Bellows / Diaphragm (高壓氣動泵)', avl: 'White Knight / Almatec', notes: `高黏度強酸。高耗能，需雙主管設計；混合遇水有高溫放熱危險。` },
+            { name: 'HF 49%', viscosity: 1.1, sg: 1.15, flash: 'N/A', category: 'Acid', material: 'PFA 951HP + CPVC', pumpType: 'Pneumatic / Mag-drive', avl: 'White Knight / Iwaki', notes: `極強腐蝕性。桶槽底部排液閥需選用 PVDF 材質。` },
+            { name: 'HNO3 70%', viscosity: 2.3, sg: 1.42, flash: 'N/A', category: 'Acid', material: 'PFA 951HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: `強酸，需注意管材抗氧化性。` },
+            { name: 'HCl 37%', viscosity: 1.9, sg: 1.19, flash: 'N/A', category: 'Acid', material: 'PFA 951HP + CPVC', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: `發煙性強酸，儲槽需配置 Exhausted enclosure。` },
+            { name: 'NaOH (Salix)', viscosity: 2.0, sg: 1.2, flash: 'N/A', category: 'Caustic', material: 'Transfer: SUS304 / Supply: PFA', pumpType: 'Mag-drive Centrifugal (磁力離心泵)', avl: 'Iwaki / Flowserve', notes: `Transfer 管線可用 SUS304，但 Supply 供應端須用 PFA 確保潔淨度。` },
+            { name: 'IPA', viscosity: 2.0, sg: 0.78, flash: '12.0°C', category: 'Solvent', material: 'SUS316L EP (自動銲接)', pumpType: 'Pneumatic Diaphragm (防爆氣動泵)', avl: 'Almatec / Yamada', notes: `大宗易燃溶劑，流速 < 1.0 m/s，系統需具備防爆箱與靜電接地。` },
+            { name: 'PGMEA', viscosity: 1.1, sg: 0.97, flash: '42.0°C', category: 'Solvent', material: 'SUS316L EP (自動銲接)', pumpType: 'Pneumatic Diaphragm (防爆氣動泵)', avl: 'Almatec / Yamada', notes: `大宗易燃溶劑，流速 < 1.0 m/s，管路需採用自動銲接。` },
+            { name: 'CuSO4', viscosity: 1.1, sg: 1.1, flash: 'N/A', category: 'Acid', material: 'PFA 451HP + CPVC', pumpType: 'Mag-drive / Pneumatic', avl: 'Iwaki / Almatec', notes: `銅廢液收集系統需獨立管路，防止 Fab 交叉污染。` },
+            { name: 'EKC-265', viscosity: 10.0, sg: 1.05, flash: '90°C', category: 'Solvent', material: 'SUS316L EP (自動銲接)', pumpType: 'Pneumatic Diaphragm (防爆氣動泵)', avl: 'Almatec / Yamada', notes: `特用高溫溶劑，黏度高，廢液系統需獨立收集桶槽。` }
+        ];
+
+        // --- 子組件: 滑桿輸入 ---
+        const SliderInput = ({ label, unit, min, max, step, value, setValue }) => (
+            <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-slate-700 flex justify-between items-center">
+                    <span>{label}</span>
+                    <div className="flex items-center gap-1 bg-white border border-slate-300 rounded px-2 py-1 focus-within:ring-2 focus-within:ring-blue-500 shadow-sm">
+                        <input type="number" step={step} value={value} onChange={e => setValue(e.target.value)} className="w-16 text-right text-blue-700 font-bold outline-none bg-transparent" />
+                        <span className="text-slate-500 text-xs w-8 select-none">{unit}</span>
+                    </div>
+                </label>
+                <input type="range" min={min} max={max} step={step} value={value === "" ? 0 : value} onChange={e => setValue(e.target.value)} className="w-full accent-blue-600 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
+            </div>
+        );
+
+        function App() {
+            const [selectedIdx, setSelectedIdx] = useState(12); // 預設 IPA
+            const [flowLPM, setFlowLPM] = useState("2.68");
+            const [velocityMS, setVelocityMS] = useState("0.8");
+            const [pipeLength, setPipeLength] = useState("400");
+            const [toolPressure, setToolPressure] = useState("3.0");
+            const [dosDays, setDosDays] = useState("5");
+            const [diversityFactor, setDiversityFactor] = useState("80");
+
+            const activeChem = chemicalsData[selectedIdx] || chemicalsData[0];
+            const nFlow = parseFloat(flowLPM) || 0.01;
+            const nVel = parseFloat(velocityMS) || 0.01;
+            const nLen = parseFloat(pipeLength) || 0;
+            const nPress = parseFloat(toolPressure) || 0;
+            const nDos = parseFloat(dosDays) || 0;
+            const nDiv = parseFloat(diversityFactor) || 0;
+
+            // --- 計算核心邏輯 ---
+            const pipeID = useMemo(() => {
+                const q_m3s = nFlow / 60000;
+                const id_m = Math.sqrt((4 * q_m3s) / (Math.PI * nVel));
+                return id_m * 1000; 
+            }, [nFlow, nVel]);
+
+            const nomSize = useMemo(() => {
+                if (!pipeID || pipeID <= 0) return { display: "-", isStandardUpgraded: false };
+                let theoreticalSize = "";
+                if (pipeID <= 16) theoreticalSize = "1/2 inch (15A)";
+                else if (pipeID <= 22) theoreticalSize = "3/4 inch (20A)";
+                else if (pipeID <= 35) theoreticalSize = "1 inch (25A)";
+                else if (pipeID <= 50) theoreticalSize = "1.5 inch (40A)";
+                else if (pipeID <= 65) theoreticalSize = "2 inch (50A)";
+                else theoreticalSize = "> 2 inch";
+
+                if (pipeID <= 25.4) {
+                    return { display: "1 inch (25A)", isStandardUpgraded: true, theory: theoreticalSize };
+                }
+                return { display: theoreticalSize, isStandardUpgraded: false };
+            }, [pipeID]);
+
+            const tankVol = useMemo(() => (nFlow * (nDiv / 100) * 1440 * nDos) / 0.85, [nFlow, nDiv, nDos]);
+
+            const totalHead = useMemo(() => {
+                const actualID = pipeID < 25.4 ? 25.4 : pipeID;
+                const filterDP = 1.2; 
+                const frictionLoss = (0.002 * activeChem.viscosity * nFlow * nLen) / Math.pow(actualID || 1, 2);
+                return nPress + filterDP + frictionLoss;
+            }, [pipeID, activeChem.viscosity, nFlow, nLen, nPress]);
+
+            // --- 選型建議內容 ---
+            const isPneumatic = useMemo(() => {
+                return activeChem.pumpType.includes('Pneumatic') || activeChem.pumpType.includes('氣動');
+            }, [activeChem]);
+
+            const pumpSpec = useMemo(() => {
+                const isSolvent = activeChem.category === 'Solvent';
+                if (isPneumatic) {
+                    if (nFlow <= 15) return isSolvent ? "Yamada NDP-15BST" : "White Knight PSA-15";
+                    else if (nFlow <= 60) return isSolvent ? "Yamada NDP-25BST" : "White Knight PSA-25";
+                    else return isSolvent ? "Yamada NDP-40BST" : "White Knight PSA-40";
+                } else {
+                    if (nFlow <= 30) return "Iwaki MDM-25";
+                    else if (nFlow <= 100) return "Iwaki MDM-40";
+                    else return "Iwaki MDM-50";
+                }
+            }, [activeChem, nFlow, isPneumatic]);
+
+            const filterSpec = useMemo(() => {
+                const housingMat = activeChem.category === 'Solvent' ? "SUS316L EP" : "PFA";
+                let sizeSuggest = nFlow <= 20 ? '10" x 1 Core' : nFlow <= 60 ? '20" x 1 Core' : '20" x 2 Core';
+                return { housingMat, sizeSuggest, vendors: "Entegris / Pall" };
+            }, [activeChem, nFlow]);
+
+            const pipeSpec = useMemo(() => {
+                const name = activeChem.name;
+                const isSolvent = activeChem.category === 'Solvent';
+                if (isSolvent) {
+                    if (name.includes('IPA') || name.includes('PGMEA')) {
+                        return { primary: "SUS316L EP (10Ra)", secondary: "SUS304 Jacket", joining: "Auto Welding", standard: "Global Solvent Standard" };
+                    }
+                    return { primary: "PFA 451HP", secondary: "SUS304 / PVC", joining: "PFA Fusion", standard: "Global Solvent Standard" };
+                }
+                const highCorr = ['H2SO4', 'HF', 'HNO3', 'HCl', 'NH4OH'];
+                const isHigh = highCorr.some(h => name.includes(h));
+                return {
+                    primary: isHigh ? "PFA 951HP" : "PFA 451HP",
+                    secondary: "CPVC Jacket (Sch 80)",
+                    joining: "PFA IR Fusion / Flare",
+                    standard: "Global Corrosive Standard"
+                };
+            }, [activeChem]);
+
+            const cdaDisplay = useMemo(() => {
+                const val = nFlow * (totalHead / 1.5) * 1.5;
+                return val < 1 ? 0 : Math.round(val);
+            }, [nFlow, totalHead]);
+            
+            const hpDisplay = useMemo(() => {
+                return (nFlow * totalHead * 10 / 2250).toFixed(2);
+            }, [nFlow, totalHead]);
+
+            // --- 警告狀態 ---
+            const isSolventHighSpeed = activeChem.category === 'Solvent' && nVel > 1.0;
+            const isLowSpeed = nVel < 0.3 && nVel > 0;
+            const isLowDOS = nDos < 3;
+
+            return (
+                <div className="max-w-6xl mx-auto p-4 md:p-6 bg-slate-50 min-h-screen text-slate-900">
+                    <div className="bg-slate-800 text-white p-6 rounded-xl shadow-lg mb-6 flex justify-between items-end border-b-4 border-blue-500">
+                        <div>
+                            <h1 className="text-2xl font-bold tracking-tight">美光 CDS / WCCS 專家設計工具</h1>
+                            <p className="mt-1 text-slate-400 text-sm italic tracking-wide">Micron Global Facilities Standard Compliance Edition</p>
+                        </div>
+                        <div className="text-right">
+                            <span className="text-xs bg-blue-600 px-2 py-1 rounded font-bold uppercase tracking-widest shadow-sm">Engineering Dashboard</span>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+                        <h2 className="text-xl font-bold text-slate-800 mb-4 border-b pb-2 flex items-center">
+                            <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded mr-2 text-sm">STEP 1</span>
+                            系統設計參數輸入 (Design Inputs)
+                        </h2>
+                        <div className="mb-6">
+                            <label className="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">選擇化學品 (Chemical Selection)</label>
+                            <select className="w-full p-3 border border-slate-300 rounded-lg bg-slate-50 text-lg font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" value={selectedIdx} onChange={(e) => setSelectedIdx(Number(e.target.value))}>
+                                {chemicalsData.map((chem, idx) => (
+                                    <option key={idx} value={idx}>{chem.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
+                            <SliderInput label="需求流量 (Flow Rate)" unit="LPM" min="0.1" max="100" step="0.01" value={flowLPM} setValue={setFlowLPM} />
+                            <SliderInput label="設計流速 (Target Velocity)" unit="m/s" min="0.1" max="3.0" step="0.01" value={velocityMS} setValue={setVelocityMS} />
+                            <SliderInput label="同時使用率 (Diversity Factor)" unit="%" min="1" max="100" step="1" value={diversityFactor} setValue={setDiversityFactor} />
+                            <SliderInput label="庫存天數 (Days of Storage)" unit="Days" min="1" max="10" step="0.5" value={dosDays} setValue={setDosDays} />
+                            <SliderInput label="總管長度 (Pipe Length)" unit="m" min="10" max="1000" step="1" value={pipeLength} setValue={setPipeLength} />
+                            <SliderInput label="機台需求壓力 (Tool Pressure)" unit="kg/cm²" min="0.5" max="5.0" step="0.1" value={toolPressure} setValue={setToolPressure} />
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6 relative">
+                        <h2 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center">
+                            <span className="bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center mr-2 text-xs font-bold">2</span>
+                            系統動態昇位圖 (Process Flow Diagram)
+                        </h2>
+                        
+                        <div className="w-full bg-slate-900 rounded-xl p-4 overflow-x-auto relative shadow-inner">
+                            <div className="min-w-[900px] h-[450px] relative">
+                                <svg width="100%" height="100%" viewBox="0 0 1000 450" preserveAspectRatio="xMidYMid meet">
+                                    <style>
+                                        {`
+                                        @keyframes flow { to { stroke-dashoffset: 0; } }
+                                        .line-flow { stroke-dasharray: 10 5; animation: flow 1s linear infinite; stroke-dashoffset: 150; }
+                                        .pfd-text { font-family: monospace; font-size: 11px; fill: #94a3b8; }
+                                        .pfd-val { font-family: sans-serif; font-size: 14px; font-weight: 800; fill: #38bdf8; }
+                                        .pfd-title { font-size: 14px; font-weight: bold; fill: #ffffff; }
+                                        .pfd-label-box { fill: #0f172a; stroke: #334155; }
+                                        `}
+                                    </style>
+
+                                    <g transform="translate(50, 240)">
+                                        <path d="M 0 35 L 100 35 L 110 70 L 0 70 Z" fill="#1e293b" stroke="#475569" strokeWidth="2"/>
+                                        <rect x="10" y="5" width="80" height="50" rx="4" fill="#334155" stroke="#94a3b8" strokeWidth="2" />
+                                        <circle cx="25" cy="75" r="10" fill="#000" />
+                                        <circle cx="85" cy="75" r="10" fill="#000" />
+                                        <text x="50" y="105" textAnchor="middle" className="pfd-title">LORRY STATION</text>
+                                    </g>
+
+                                    <g transform="translate(300, 180)">
+                                        <rect x="-15" y="-85" width="180" height="55" rx="8" className="pfd-label-box" stroke="#38bdf8" />
+                                        <text x="75" y="-62" textAnchor="middle" className="pfd-text" fill="#cbd5e1">CALC. CAPACITY (L)</text>
+                                        <text x="75" y="-40" textAnchor="middle" className="pfd-val" fill="#fde047">{Math.round(tankVol).toLocaleString()} L / Tank</text>
+                                        
+                                        <g transform="translate(0,0)">
+                                            <path d="M 0 10 Q 0 0 10 0 L 50 0 Q 60 0 60 10 L 60 110 L 0 110 Z" fill="#1e293b" stroke="#38bdf8" strokeWidth="3" />
+                                            <rect x="5" y="40" width="50" height="65" fill="#38bdf8" fillOpacity="0.2" />
+                                        </g>
+                                        <g transform="translate(90,0)">
+                                            <path d="M 0 10 Q 0 0 10 0 L 50 0 Q 60 0 60 10 L 60 110 L 0 110 Z" fill="#1e293b" stroke="#38bdf8" strokeWidth="3" />
+                                            <rect x="5" y="60" width="50" height="45" fill="#38bdf8" fillOpacity="0.2" />
+                                        </g>
+                                        <text x="75" y="145" textAnchor="middle" className="pfd-title" fill="#00f2ff">STORAGE TANK (N+1)</text>
+                                    </g>
+
+                                    <g transform="translate(620, 130)">
+                                        <rect x="-30" y="-85" width="260" height="65" rx="10" className="pfd-label-box" stroke="#38bdf8" />
+                                        <text x="100" y="-62" textAnchor="middle" className="pfd-text">PUMP: {pumpSpec}</text>
+                                        <text x="100" y="-40" textAnchor="middle" className="pfd-text">FILTER: {filterSpec.sizeSuggest}</text>
+
+                                        <rect x="0" y="0" width="200" height="220" rx="12" fill="none" stroke="#94a3b8" strokeWidth="3" strokeDasharray="10 5" />
+                                        <circle cx="70" cy="110" r="40" fill="#0f172a" stroke="#ef4444" strokeWidth="4" />
+                                        <text x="70" y="117" textAnchor="middle" fill="#ef4444" fontWeight="900" fontSize="14">PUMP</text>
+                                        
+                                        <rect x="150" y="70" width="40" height="90" rx="4" fill="#0f172a" stroke="#10b981" strokeWidth="4" />
+                                        <line x1="150" y1="115" x2="190" y2="115" stroke="#10b981" strokeWidth="3" />
+                                        <text x="100" y="250" textAnchor="middle" className="pfd-title" fill="#ffffff">CDU CABINET</text>
+                                    </g>
+
+                                    <g transform="translate(880, 240)">
+                                        <rect x="0" y="0" width="70" height="100" rx="6" fill="#1e293b" stroke="#10b981" strokeWidth="3" />
+                                        <circle cx="35" cy="30" r="5" fill="#10b981" />
+                                        <circle cx="35" cy="50" r="5" fill="#10b981" />
+                                        <circle cx="35" cy="70" r="5" fill="#10b981" />
+                                        <text x="35" y="130" textAnchor="middle" className="pfd-title">VMB</text>
+                                    </g>
+
+                                    <g fill="none" strokeLinejoin="round">
+                                        <path d="M 160 300 L 250 300 L 250 260 L 300 260" stroke="#38bdf8" strokeWidth="4" className="line-flow" />
+                                        <text x="210" y="285" textAnchor="middle" className="pipe-size-label">{nomSize.display}</text>
+
+                                        <path d="M 450 260 L 530 260 L 530 220 L 620 220" stroke="#38bdf8" strokeWidth="4" className="line-flow" />
+                                        <text x="500" y="245" textAnchor="middle" className="pipe-size-label">{nomSize.display}</text>
+
+                                        <path d="M 820 220 L 850 220 L 850 290 L 880 290" stroke="#10b981" strokeWidth="4" className="line-flow" />
+                                        <text x="825" y="205" textAnchor="start" className="pipe-size-label">{nomSize.display}</text>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                            <h2 className="text-xl font-bold text-slate-800 mb-4 border-b pb-2 flex items-center">
+                                <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded mr-2 text-sm">STEP 3</span>
+                                流體物理特性 (Fluid Properties)
+                            </h2>
+                            <ul className="space-y-3">
+                                <li className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
+                                    <span className="text-slate-600 font-semibold">絕對黏度 (Viscosity)</span>
+                                    <span className="font-bold text-slate-800">{activeChem.viscosity.toFixed(2)} cP</span>
+                                </li>
+                                <li className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
+                                    <span className="text-slate-600 font-semibold">比重 (Specific Gravity)</span>
+                                    <span className="font-bold text-slate-800">{activeChem.sg.toFixed(2)}</span>
+                                </li>
+                                <li className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
+                                    <span className="text-slate-600 font-semibold">閃火點 (Flash Point)</span>
+                                    <span className="font-bold text-slate-800">{activeChem.flash}</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                            <h2 className="text-xl font-bold text-slate-800 mb-4 border-b pb-2 flex items-center">
+                                <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded mr-2 text-sm">STEP 4</span>
+                                水力設計數據 (Hydraulic Analysis)
+                            </h2>
+                            <ul className="space-y-3">
+                                <li className="flex justify-between items-center">
+                                    <span className="text-slate-600 font-semibold">計算內徑 (Calculated ID)</span>
+                                    <span className="font-bold text-xl text-slate-800">{pipeID.toFixed(2)} mm</span>
+                                </li>
+                                <li className="flex justify-between items-center">
+                                    <div className="flex flex-col">
+                                        <span className="text-slate-600 font-semibold">標稱管徑 (Nominal)</span>
+                                        {nomSize.isStandardUpgraded && <span className="text-[10px] text-blue-500 font-bold italic underline">理論值: {nomSize.theory}</span>}
+                                    </div>
+                                    <span className="font-bold text-xl text-orange-600">{nomSize.display}</span>
+                                </li>
+                                <li className="flex justify-between items-center border-t border-slate-100 pt-3">
+                                    <span className="text-slate-600 font-semibold">預估總揚程 (Total Head)</span>
+                                    <span className="font-bold text-2xl text-emerald-600">{totalHead.toFixed(2)} kg/cm²</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+                        <h2 className="text-xl font-bold text-slate-800 mb-4 border-b pb-2 flex items-center">
+                            <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center mr-3 text-sm shadow-sm font-black">5</span>
+                            選型建議 (Hardware Selection Recommendations)
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="p-5 bg-emerald-50 rounded-xl border border-emerald-200 flex flex-col justify-between shadow-sm">
+                                <div>
+                                    <div className="flex items-center mb-3">
+                                        <span className="p-2 bg-emerald-600 rounded-lg mr-2 text-white text-xs font-bold uppercase tracking-widest">PUMP</span>
+                                        <h3 className="text-sm font-bold text-emerald-800 uppercase tracking-tight">建議泵浦規格</h3>
+                                    </div>
+                                    <p className="text-xl font-bold text-emerald-900 leading-tight mb-2">{pumpSpec}</p>
+                                    <p className="text-xs text-emerald-700 font-medium mb-4 italic">AVL: {activeChem.avl}</p>
+                                </div>
+                                <div className="pt-4 border-t border-emerald-200">
+                                    {isPneumatic ? (
+                                        <p className="text-sm font-bold text-blue-700 flex justify-between">預估耗氣量: <span>{cdaDisplay} LPM (CDA)</span></p>
+                                    ) : (
+                                        <p className="text-sm font-bold text-emerald-700 flex justify-between">預估馬力需求: <span>{hpDisplay} HP</span></p>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="p-5 bg-blue-50 rounded-xl border border-blue-200 flex flex-col justify-between shadow-sm">
+                                <div>
+                                    <div className="flex items-center mb-3">
+                                        <span className="p-2 bg-blue-600 rounded-lg mr-2 text-white text-xs font-bold uppercase tracking-widest">FILTER</span>
+                                        <h3 className="text-sm font-bold text-blue-800 uppercase tracking-tight">建議過濾器規格</h3>
+                                    </div>
+                                    <p className="text-xl font-bold text-blue-900 leading-tight mb-2">{filterSpec.sizeSuggest}</p>
+                                    <p className="text-xs text-blue-700 font-medium mb-1 italic">材質: {filterSpec.housingMat}</p>
+                                </div>
+                                <div className="pt-4 border-t border-blue-200 text-sm font-bold text-blue-800 flex justify-between uppercase">
+                                    合格供應商: <span className="text-xs">{filterSpec.vendors}</span>
+                                </div>
+                            </div>
+
+                            <div className="p-5 bg-indigo-50 rounded-xl border border-indigo-200 flex flex-col justify-between shadow-sm">
+                                <div>
+                                    <div className="flex items-center mb-3">
+                                        <span className="p-2 bg-indigo-600 rounded-lg mr-2 text-white text-xs font-bold uppercase tracking-widest">PIPING</span>
+                                        <h3 className="text-sm font-bold text-indigo-800 uppercase tracking-tight">建議管路選型</h3>
+                                    </div>
+                                    <div className="space-y-2 text-xs font-bold">
+                                        <p className="flex justify-between"><span>內管 (Primary):</span><span className="text-indigo-950 underline">{pipeSpec.primary}</span></p>
+                                        <p className="flex justify-between"><span>外管 (Secondary):</span><span>{pipeSpec.secondary}</span></p>
+                                        <p className="flex justify-between border-t border-indigo-200 pt-2"><span>接合方式:</span><span>{pipeSpec.joining}</span></p>
+                                    </div>
+                                </div>
+                                <div className="pt-4 border-t border-indigo-200 text-[10px] text-indigo-500 font-bold uppercase italic tracking-tighter">
+                                    {pipeSpec.standard}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-xl shadow-sm border-l-8 border-blue-600 mb-6">
+                        <h2 className="text-lg font-bold text-slate-800 mb-4 border-b pb-2 flex items-center uppercase tracking-tight">
+                            安全設計與法規遵循 (Compliance & Safety)
+                        </h2>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div>
+                                <h3 className="text-xs font-bold text-blue-800 mb-3 uppercase tracking-widest underline decoration-2 underline-offset-4">Global Standard 安全設計要求</h3>
+                                <ul className="space-y-2 text-xs text-slate-700 font-medium">
+                                    <li className="flex items-start"><span className="text-blue-600 mr-2 font-bold">🛡️</span> <span><span className="font-bold text-slate-900">二次包覆 (Double Containment)：</span>依規範所有 HPM 管路內外管間須配置漏液偵測器。</span></li>
+                                    <li className="flex items-start"><span className="text-blue-600 mr-2 font-bold">🛡️</span> <span><span className="font-bold text-slate-900">自動隔離：</span>儲槽出口與分配箱須配置 AIV (Air-operated Isolation Valve) 並連動 EMO 與偵煙系統。</span></li>
+                                    <li className="flex items-start"><span className="text-blue-600 mr-2 font-bold">🛡️</span> <span><span className="font-bold text-slate-900">備援機制：</span>關鍵供應系統採 N+1 概念，確保不斷藥且具未來擴充性。</span></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 className="text-xs font-bold text-red-800 mb-3 uppercase tracking-widest underline decoration-2 underline-offset-4">台灣法規符合性要求 (TW Local Law)</h3>
+                                <ul className="space-y-3 text-xs text-slate-700 font-medium">
+                                    <li>⚖️ <span className="font-bold text-slate-900">毒化物管理：</span>HF, TMAH (2.38%+) 屬公告列管毒性化學物質，須落實五聯單與專人管理。</li>
+                                    <li>⚖️ <span className="font-bold text-slate-900">公危物品：</span>IPA, PGMEA 等溶劑儲存量達標時，須符合消防防爆與保安距離規範。</li>
+                                    <li>⚖️ <span className="font-bold text-slate-900">職安法 - 甲類場所：</span><span className="text-red-600 font-black">H2O2 (雙氧水)</span>, HF, TMAH 等劇毒與強氧化性供應系統，依法須通過危評審查。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-amber-50 p-6 rounded-xl border border-amber-200">
+                        <h2 className="text-sm font-bold text-amber-800 mb-4 flex items-center">
+                            <span className="mr-2">⚠️</span> 專家設計提示 (System Alerts)
+                        </h2>
+                        <ul className="text-xs space-y-3 text-amber-900 leading-relaxed font-semibold">
+                            <li className="flex gap-2"><span>📌</span> <span>化學品備註：{activeChem.notes}</span></li>
+                            {nomSize.isStandardUpgraded && (
+                                <li className="flex gap-2 text-blue-700 underline decoration-blue-300">
+                                    <span>🛡️</span> <span>依據 Global Standard (CDS Standard)，供應主管路最低標稱尺寸已自動提升至 1 inch (25A)。</span>
+                                </li>
+                            )}
+                            {isSolventHighSpeed && (
+                                <li className="flex gap-2 text-red-700 bg-red-100 p-2 rounded border border-red-200">
+                                    <span>⚠️</span> <span>警告：{activeChem.name} 為易燃溶劑，依據防爆規範，流速不應超過 1.0 m/s 以避免管壁靜電放電！請調降流速或放大管徑。</span>
+                                </li>
+                            )}
+                            {isLowSpeed && (
+                                <li className="flex gap-2 text-orange-700 underline">
+                                    <span>⚠️</span> <span>警告：流速低於 0.3 m/s。依據 Global Standard，系統連續迴路(Loop)最低流速須 &gt; 1 ft/s 以防止微粒沉澱與生物膜生成。</span>
+                                </li>
+                            )}
+                            {isLowDOS && (
+                                <li className="flex gap-2 text-blue-800">
+                                    <span>ℹ️</span> <span>提醒：DOS 庫存天數設定低於 3 天。依據 BCP 營運持續規範，若低於 2 天需考量啟動外部 ISO 槽車待命計畫。</span>
+                                </li>
+                            )}
+                        </ul>
+                    </div>
